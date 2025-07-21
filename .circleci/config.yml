@@ -20,7 +20,33 @@ jobs:
       - checkout
       - run:
           name: "Say hello"
-          command: "echo Hello, World!"
+  update_version_file:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+
+      - run:
+          name: Setup SSH Key
+          command: |
+            mkdir -p ~/.ssh
+            echo "$ROBOT_SSH_KEY" | base64 --decode > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - run:
+          name: Clone verswin_control and update version.txt
+          command: |
+            git clone git@github.com:Rafaelkaaa/verswin_control.git
+            cd verswin_control
+
+            echo "$(git -C ../ rev-parse HEAD)" > version.txt
+
+            git config user.name "CI Bot"
+            git config user.email "ci-bot@rafaelkaaa.net"
+            git add version.txt
+            git commit -m "Update version.txt with latest commit hash"
+            git push origin main
 
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
@@ -29,3 +55,11 @@ workflows:
     # Inside the workflow, you define the jobs you want to run.
     jobs:
       - say-hello
+  update-hash-on-commit:
+    jobs:
+      - update_version_file:
+          filters:
+            branches:
+              only:
+                - main
+                - develop
