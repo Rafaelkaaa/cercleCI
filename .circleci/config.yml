@@ -10,7 +10,7 @@ jobs:
           name: "Say hello"
           command: echo "Hello from CircleCI 👋"
 
- update_version_file:
+  update_version_file:
     docker:
       - image: cimg/base:stable
     steps:
