@@ -42,8 +42,7 @@ jobs:
             git clone git@github.com-verswin:Rafaelkaaa/verswin_control.git
             cd verswin_control
             git checkout main || git checkout -b main
-
-            echo "$git_hash" > version.txt
+            sed -i.bak "s/^admin: .*/admin: $git_hash/" version.txt
 
             if ! git diff --quiet; then
               git config user.name "CI Bot"
