@@ -45,6 +45,7 @@ jobs:
           command: |
             git clone git@github.com-circleci:Rafaelkaaa/cercleCI.git
             cd cercleCI
+            git checkout main || git checkout -b main
             git_hash=$(git rev-parse HEAD)
 
             git clone git@github.com-verswin:Rafaelkaaa/verswin_control.git
