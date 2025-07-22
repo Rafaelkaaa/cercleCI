@@ -1,12 +1,19 @@
 version: 2.1
 
 jobs:
+  say-hello:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: "Say hello"
+          command: echo "Hello from CircleCI 👋"
+
   update_version_file:
     docker:
       - image: cimg/base:stable
     steps:
-      - checkout  # обовʼязково, щоб git rev-parse працювало
-
       - run:
           name: Setup SSH Keys
           command: |
@@ -20,6 +27,7 @@ jobs:
 
             ssh-keyscan github.com >> ~/.ssh/known_hosts
 
+            # Додай у SSH config, щоб кожен ключ відповідав конкретному repo
             echo "Host github.com-circleci
               HostName github.com
               User git
@@ -35,15 +43,10 @@ jobs:
       - run:
           name: Clone verswin_control and update version.txt
           command: |
-            git_hash=$(git rev-parse HEAD)
-
-            GIT_SSH_COMMAND="ssh -F ~/.ssh/config -o StrictHostKeyChecking=no" \
-            git clone github.com-verswin:Rafaelkaaa/verswin_control.git
-
+            git clone git@github.com-verswin:Rafaelkaaa/verswin_control.git
             cd verswin_control
             git checkout main || git checkout -b main
-
-            echo "$git_hash" > version.txt
+            echo "$(git -C ../ rev-parse HEAD)" > version.txt
 
             if ! git diff --quiet; then
               git config user.name "CI Bot"
@@ -54,11 +57,11 @@ jobs:
             else
               echo "No changes to commit"
             fi
-
 workflows:
   version: 2
   run-all:
     jobs:
+      - say-hello
       - update_version_file:
           filters:
             branches:
