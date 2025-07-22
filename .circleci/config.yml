@@ -34,10 +34,13 @@ jobs:
       - run:
           name: Clone verswin_control and update version.txt
           command: |
-            git clone git@github.com-verswin:Rafaelkaaa/verswin_control.git
+            git_hash=$(git rev-parse HEAD)
+
+            git clone git@github.com:Rafaelkaaa/verswin_control.git
             cd verswin_control
             git checkout main || git checkout -b main
-            echo "$(git -C ../ rev-parse HEAD)" > version.txt
+
+            echo "$git_hash" > version.txt
 
             if ! git diff --quiet; then
               git config user.name "CI Bot"
