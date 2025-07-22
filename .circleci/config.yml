@@ -14,23 +14,38 @@ jobs:
     docker:
       - image: cimg/base:stable
     steps:
-      - checkout
-
       - run:
-          name: Setup SSH Key for verswin_control
+          name: Setup SSH Keys
           command: |
             mkdir -p ~/.ssh
+
+            echo "$SSH_KEY_CIRCLECI" | base64 --decode > ~/.ssh/id_circleci
+            chmod 600 ~/.ssh/id_circleci
+
             echo "$SSH_KEY_VERSWIN" | base64 --decode > ~/.ssh/id_verswin
-            chmod 600 ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_verswin
+
             ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+            # Додай у SSH config, щоб кожен ключ відповідав конкретному repo
+            echo "Host github.com-circleci
+              HostName github.com
+              User git
+              IdentityFile ~/.ssh/id_circleci
+              IdentitiesOnly yes" >> ~/.ssh/config
+
+            echo "Host github.com-verswin
+              HostName github.com
+              User git
+              IdentityFile ~/.ssh/id_verswin
+              IdentitiesOnly yes" >> ~/.ssh/config
 
       - run:
           name: Clone verswin_control and update version.txt
           command: |
-            git clone git@github.com:Rafaelkaaa/verswin_control.git
+            git clone git@github.com-verswin:Rafaelkaaa/verswin_control.git
             cd verswin_control
             git checkout main || git checkout -b main
-
             echo "$(git -C ../ rev-parse HEAD)" > version.txt
 
             if ! git diff --quiet; then
