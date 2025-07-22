@@ -43,6 +43,8 @@ jobs:
       - run:
           name: Clone verswin_control and update version.txt
           command: |
+            git clone git@github.com-circleci:Rafaelkaaa/cercleCI.git
+            cd cercleCI
             git_hash=$(git rev-parse HEAD)
 
             git clone git@github.com-verswin:Rafaelkaaa/verswin_control.git
