@@ -1,15 +1,6 @@
 version: 2.1
 
 jobs:
-  say-hello:
-    docker:
-      - image: cimg/base:current
-    steps:
-      - checkout
-      - run:
-          name: "Say hello"
-          command: echo "Hello from CircleCI 👋"
-
   update_version_file:
     docker:
       - image: cimg/base:stable
@@ -61,7 +52,6 @@ workflows:
   version: 2
   run-all:
     jobs:
-      - say-hello
       - update_version_file:
           filters:
             branches:
