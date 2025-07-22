@@ -20,7 +20,7 @@ jobs:
           name: Setup SSH Key for verswin_control
           command: |
             mkdir -p ~/.ssh
-            echo "$SSH_KEY_VERSWIN" | base64 --decode > ~/.ssh/id_rsa
+            echo "$SSH_KEY_VERSWIN" | base64 --decode > ~/.ssh/id_verswin
             chmod 600 ~/.ssh/id_rsa
             ssh-keyscan github.com >> ~/.ssh/known_hosts
 
